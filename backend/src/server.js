@@ -4,6 +4,7 @@
  * Entry point
  * - يشغل السيرفر
  * - health check يفحص DB
+ * - يربط Routes الخاصة بالمشروع (Areas كبداية)
  */
 
 require('dotenv').config();
@@ -11,6 +12,9 @@ require('dotenv').config();
 const app = require('./app');
 const db = require('./db');
 const { port, nodeEnv } = require('./config');
+
+// ✅ Routes
+const areasRoutes = require('./routes/areas.routes');
 
 // Root
 app.get('/', (req, res) => {
@@ -35,6 +39,10 @@ app.get('/health', async (req, res) => {
     });
   }
 });
+
+// ✅ Mount API Routes
+// ملاحظة: كل API راح يكون تحت /api
+app.use('/api/areas', areasRoutes);
 
 app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 AreaSync API running on port ${port}`);
