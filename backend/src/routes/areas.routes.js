@@ -7,10 +7,10 @@
 const router = require('express').Router();
 const ctrl = require('../controllers/areas.controller');
 
-// قائمة المناطق
+// ✅ قائمة المناطق (لشاشة اختيار المنطقة)
 router.get('/', ctrl.listAreas);
 
-// Seed بسماية (مؤقتاً بدون حماية، سنغلقه لاحقاً)
+// ✅ Seed بسماية (مؤقتاً بدون حماية، سنقفلها لاحقاً بـ Developer Secret)
 router.post('/seed/bismaya', ctrl.seedBismaya);
 
 module.exports = router;

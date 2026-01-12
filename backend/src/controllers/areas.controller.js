@@ -7,7 +7,6 @@
 const db = require('../db');
 
 // GET /api/areas
-// جلب قائمة المناطق (لشاشة اختيار المنطقة)
 async function listAreas(req, res) {
   try {
     const { rows } = await db.query(
@@ -26,15 +25,14 @@ async function listAreas(req, res) {
 }
 
 // POST /api/areas/seed/bismaya
-// Seed بسماية (يُستعمل مرة واحدة فقط)
-// ملاحظة: سنحميه لاحقاً بـ Developer secret
+// ملاحظة: يُفضّل استخدامه مرة واحدة فقط
 async function seedBismaya(req, res) {
   const client = await db.pool.connect();
 
   try {
     await client.query('BEGIN');
 
-    // 1) إنشاء المنطقة إذا غير موجودة
+    // 1) إنشاء المنطقة (بسماية) أو تحديث اسمها إذا موجودة
     const areaRes = await client.query(
       `INSERT INTO areas (name, slug)
        VALUES ($1, $2)
@@ -45,14 +43,13 @@ async function seedBismaya(req, res) {
 
     const area = areaRes.rows[0];
 
-    // 2) إضافة بلوكات نموذجية (قابلة للتعديل)
+    // 2) بلوكات نموذجية (تقدر تغيرها لاحقاً)
     const blocks = [
       { name: 'Block A', code: 'A' },
       { name: 'Block B', code: 'B' },
       { name: 'Block C', code: 'C' },
     ];
 
-    // إدخال البلوكات (بدون تكرار)
     for (const b of blocks) {
       await client.query(
         `INSERT INTO blocks (area_id, name, code)
@@ -62,14 +59,14 @@ async function seedBismaya(req, res) {
       );
     }
 
-    // 3) مثال: إضافة عمارات نموذجية لكل بلوك
+    // 3) إضافة عمارات نموذجية لكل بلوك
     const { rows: blockRows } = await client.query(
       `SELECT id, code FROM blocks WHERE area_id = $1 ORDER BY id ASC`,
       [area.id]
     );
 
     for (const blk of blockRows) {
-      // عمارات 1..3 لكل بلوك (مثال فقط)
+      // 3 عمارات لكل بلوك (مثال)
       for (let i = 1; i <= 3; i++) {
         const buildingCode = `${blk.code}-${i}`;
         const buildingName = `Building ${buildingCode}`;
